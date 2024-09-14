@@ -86,6 +86,7 @@ func Run(port int) {
 			Headers: headers,
 			Queries: queries,
 			Body:    bodyStr,
+			Ip:      c.IP(),
 		}
 
 		_ = redis.LPush(cache.PACKAGE, jsonx.ToStr(p), time.Hour*24)

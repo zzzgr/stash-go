@@ -6,4 +6,6 @@ type Package struct {
 	Queries map[string]string `json:"queries"`
 	Headers map[string]string `json:"headers"`
 	Body    string            `json:"body"`
+
+	Ip string `json:"ip"`
 }
