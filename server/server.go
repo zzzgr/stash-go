@@ -14,7 +14,9 @@ import (
 )
 
 func Run(port int) {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ReadBufferSize: 1024 * 1024 * 1024,
+	})
 
 	app.All("/", func(c *fiber.Ctx) error {
 		return c.SendString("hello, stash-go!")
@@ -52,10 +54,9 @@ func Run(port int) {
 		headers := getHeaders(c.GetReqHeaders())
 		queries := c.Queries()
 		bodyStr := string(c.Body())
-		protocol := c.Protocol()
 		host := string(uri.Host())
 		path := string(uri.Path())
-		url := protocol + "://" + host + path
+		url := "https://" + host + path
 
 		// options 真实请求
 		if method == "OPTIONS" {
@@ -63,7 +64,7 @@ func Run(port int) {
 				SetHeaders(headers).
 				SetBody(bodyStr).
 				SetQueryParams(queries).
-				Options("https://" + host + path)
+				Options(url)
 			if err != nil {
 				log.Info("OPTIONS forward err: ", err.Error())
 				return err
