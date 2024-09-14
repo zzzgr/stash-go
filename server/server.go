@@ -63,7 +63,7 @@ func Run(port int) {
 				SetHeaders(headers).
 				SetBody(bodyStr).
 				SetQueryParams(queries).
-				Options(url)
+				Options("https://" + host + path)
 			if err != nil {
 				log.Info("OPTIONS forward err: ", err.Error())
 				return err
