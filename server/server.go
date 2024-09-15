@@ -83,6 +83,8 @@ func Run(port int) {
 		p := model.Package{
 			Url:     url,
 			Method:  method,
+			Host:    host,
+			Path:    path,
 			Headers: headers,
 			Queries: queries,
 			Body:    bodyStr,
