@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"stash-go/config"
 	"stash-go/redis"
 	"stash-go/server"
 	"syscall"
@@ -17,6 +18,7 @@ func main() {
   / ___/ __/ __ ` + "`" + `/ ___/ __ \
  (__  ) /_/ /_/ (__  ) / / /
 /____/\__/\__,_/____/_/ /_/   by: zgr`)
+	fmt.Println()
 
 	addr := flag.String("redis_addr", "127.0.0.1:6379", "Redis server address")
 	redisUsername := flag.String("redis_username", "", "Redis username")
@@ -25,6 +27,9 @@ func main() {
 	httpPort := flag.Int("http_port", 8080, "HTTP server port")
 
 	flag.Parse()
+
+	// config
+	config.SetUp()
 
 	// redis
 	redis.Init(*addr, *redisUsername, *redisPassword, *redisDB)

@@ -11,3 +11,8 @@ type Package struct {
 
 	Ip string `json:"ip"`
 }
+
+type NamedPackage struct {
+	Name     string     `json:"name"`
+	Packages []*Package `json:"packages"`
+}

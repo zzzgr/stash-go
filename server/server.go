@@ -5,17 +5,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	v1 "stash-go/api"
+	"stash-go/config"
 	"stash-go/const/cache"
 	"stash-go/httpx"
 	"stash-go/jsonx"
 	"stash-go/model"
 	"stash-go/redis"
+	"stash-go/util"
+	"strconv"
 	"time"
 )
 
 func Run(port int) {
 	app := fiber.New(fiber.Config{
-		ReadBufferSize: 1024 * 1024 * 1024,
+		ReadBufferSize: 512 * 1024,
 	})
 
 	app.All("/", func(c *fiber.Ctx) error {
@@ -27,16 +30,27 @@ func Run(port int) {
 	})
 
 	app.Get("/get", func(c *fiber.Ctx) error {
-		list := redis.List("stash:package")
-		res := make([]*model.Package, 0)
-		for _, item := range list {
-			m, err := jsonx.To(item, &model.Package{})
-			if err != nil {
-				continue
-			}
-			res = append(res, m)
+		typ, err := strconv.Atoi(c.Query("type", "1"))
+		if err != nil {
+			typ = 1
 		}
-		return v1.HandleSuccess(c, res)
+
+		list := redis.List("stash:package")
+
+		switch typ {
+		case 1:
+			{
+				return v1.HandleSuccess(c, handleType1(list))
+			}
+
+		case 2:
+			{
+				return v1.HandleSuccess(c, handleType2(list))
+			}
+		default:
+			return v1.HandleSuccess(c, nil)
+		}
+
 	})
 
 	app.Get("/clear", func(c *fiber.Ctx) error {
@@ -108,4 +122,63 @@ func getHeaders(headers map[string][]string) map[string]string {
 		m[k] = v[0]
 	}
 	return m
+}
+
+func handleType1(list []string) (res []*model.Package) {
+	for _, item := range list {
+		m, err := jsonx.To(item, &model.Package{})
+		if err != nil {
+			continue
+		}
+		res = append(res, m)
+	}
+	return res
+}
+
+func handleType2(list []string) []*model.NamedPackage {
+	m := make(map[string]*model.NamedPackage)
+	for _, item := range list {
+		p, err := jsonx.To(item, &model.Package{})
+		if err != nil {
+			continue
+		}
+		for _, strategy := range config.Conf.SplitStrategy {
+			if !util.IsMatch(p.Host, strategy.HostPattern) {
+				continue
+			}
+
+			field := strategy.Field
+			typ := strategy.Type
+
+			v := ""
+			if typ == 1 { // cookie
+				cookie := p.Headers["Cookie"]
+				v = util.GetCookieFieldMap(cookie)[field]
+			} else if typ == 2 { // header
+				v = p.Headers[field]
+			} else {
+				continue
+			}
+
+			namedPkg, ok := m[v]
+			if ok {
+				namedPkg.Packages = append(namedPkg.Packages, p)
+			} else {
+
+				m[v] = &model.NamedPackage{
+					Name:     v,
+					Packages: []*model.Package{p},
+				}
+			}
+
+		}
+
+	}
+
+	r := make([]*model.NamedPackage, 0)
+	for _, p := range m {
+		r = append(r, p)
+	}
+
+	return r
 }
