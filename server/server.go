@@ -13,6 +13,7 @@ import (
 	"stash-go/redis"
 	"stash-go/util"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -106,6 +107,11 @@ func Run(port int) {
 		}
 
 		_ = redis.LPush(cache.PACKAGE, jsonx.ToStr(p), time.Hour*24)
+
+		response := c.Response()
+		if strings.Index(url, "watsonsvip.com.cn") >= 0 {
+			response.Header.Add("access-control-allow-origin", "*")
+		}
 
 		return nil
 	})
