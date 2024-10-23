@@ -34,20 +34,7 @@ func ifConfig(src string) error {
 		}
 
 		// 默认配置
-		c := &Config{
-			SplitStrategy: []SplitStrategy{
-				{
-					HostPattern: "*.jd.com*",
-					Type:        1,
-					Field:       "pt_pin",
-				},
-				{
-					HostPattern: "*.meituan.com*",
-					Type:        1,
-					Field:       "token",
-				},
-			},
-		}
+		c := &Config{}
 		appYaml, err := yaml.Marshal(c)
 		if err != nil {
 			return err
