@@ -46,6 +46,8 @@ func (s *Service) Add(requestDTO *entity.Package) {
 				if activityId == 0 {
 					continue
 				}
+			} else {
+				activityId = a.ID
 			}
 
 			// 提取field作为accountName
