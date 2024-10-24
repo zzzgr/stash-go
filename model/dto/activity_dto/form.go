@@ -12,4 +12,5 @@ type SaveRequestDTO struct {
 	Type         int     `json:"type"`
 	Field        string  `json:"field"`
 	AlertAhead   int     `json:"alertAhead"`
+	Status       int     `json:"status"`
 }

@@ -60,6 +60,7 @@ func (s *Service) Save(requestDTO *activity_dto.SaveRequestDTO) {
 				Type:         requestDTO.Type,
 				Field:        requestDTO.Field,
 				AlertAhead:   requestDTO.AlertAhead,
+				Status:       requestDTO.Status,
 			}
 			if err := tx.Create(&newActivity).Error; err != nil {
 				return err
@@ -90,6 +91,7 @@ func (s *Service) Save(requestDTO *activity_dto.SaveRequestDTO) {
 			activityDb.Type = requestDTO.Type
 			activityDb.Field = requestDTO.Field
 			activityDb.AlertAhead = requestDTO.AlertAhead
+			activityDb.Status = requestDTO.Status
 
 			if err := tx.Save(&activityDb).Error; err != nil {
 				return err

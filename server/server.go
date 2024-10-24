@@ -39,7 +39,7 @@ func (s *Server) Run(port int) {
 	s.fiber.Use(middleware.RecoverMiddleware())
 
 	// 注册 Swagger 路由
-	s.fiber.Get("/swagger/*", swagger.HandlerDefault) // Swagger UI 路径
+	s.fiber.Get("/ddoc/*", swagger.HandlerDefault) // Swagger UI 路径
 
 	s.fiber.All("/", func(c *fiber.Ctx) error {
 		return c.SendString("hello, stash-go!")

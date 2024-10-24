@@ -22,4 +22,6 @@ type Activity struct {
 	Field        string  `gorm:"type:varchar(64);not null;comment:default:'';'分号的依据 多个用英文逗号分割'" json:"field"`
 
 	AlertAhead int `gorm:"type:int(11);not null;default:0;comment:'提前通知时间 分钟'" json:"alertAhead"`
+
+	Status int `gorm:"type:tinyint(1);not null;default:1;comment:'状态 1启用 2禁用'" json:"status"`
 }
